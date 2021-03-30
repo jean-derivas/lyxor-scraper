@@ -32,6 +32,9 @@ class ETF(object):
         df = df.drop(2, axis=1)
         df.columns = ["Currency", name]
         df = df.set_index("Currency")
+        df = df.replace(regex=r'%', value="")
+        df = df.replace(regex=r',', value=".")
+        df[name] = pd.to_numeric(df[name])
         return df
 
     @staticmethod
@@ -40,6 +43,9 @@ class ETF(object):
         df = df.drop(2, axis=1)
         df.columns = ["Sector", name]
         df = df.set_index("Sector")
+        df = df.replace(regex=r'%', value="")
+        df = df.replace(regex=r',', value=".")
+        df[name] = pd.to_numeric(df[name])
         return df
 
     @staticmethod
@@ -47,13 +53,16 @@ class ETF(object):
         df = ETF._extract_table(soup, "breakdown-scrollable-box-index-countries")
         df.columns = ["Country", name]
         df = df.set_index("Country")
+        df = df.replace(regex=r'%', value="")
+        df = df.replace(regex=r',', value=".")
+        df[name] = pd.to_numeric(df[name])
         return df
 
     @staticmethod
     def _extract_table(soup, index) -> pd.DataFrame:
-        top_ten_div = soup.find_all("div", {"id": ("%s" % index)})
-        if len(top_ten_div) == 1:
-            df_top_ten = pd.read_html(str(top_ten_div[0]))
+        div = soup.find_all("div", {"id": ("%s" % index)})
+        if len(div) == 1:
+            df_div = pd.read_html(str(div[0]))
         else:
             raise RuntimeError("extract table failed. Table not found or more than one.")
-        return df_top_ten[0]
+        return df_div[0]

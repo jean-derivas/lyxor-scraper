@@ -1,5 +1,5 @@
 from ETF import ETF
-
+from scipy import optimize
 
 def demo_bs():
     world = ETF(
@@ -14,7 +14,21 @@ def demo_bs():
         "https://www.lyxoretf.fr/fr/retail/produits/etf-actions/lyxor-msci-emerging-markets-ucits-etf-acc-eur/fr0010429068/eur",
         "emerging")
 
-    print(water, emerging, world)
+    country = world.country.join(water.country, how="outer").join(emerging.country, how="outer")
+    country.fillna("0", inplace=True)
+    country = country.astype("float64")
+
+    currency = world.currency.join(water.currency).join(emerging.currency)
+    currency.fillna("0", inplace=True)
+    currency = currency.astype("float64")
+
+    sector = world.sector.join(water.sector).join(emerging.sector)
+    sector.fillna("0", inplace=True)
+    sector = sector.astype("float64")
+
+    optimize.minimize()
+
+    print("end")
 
 
 if __name__ == '__main__':
